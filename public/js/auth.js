@@ -1,17 +1,10 @@
-// Функция для отправки запросов на сервер
 async function authRequest(endpoint, data) {
-  const response = await fetch(`/api/auth/${endpoint}`, {
+  return window.app.api(`/api/auth/${endpoint}`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data)
+    body: data
   });
-  
-  const result = await response.json();
-  if (!response.ok) throw new Error(result.message || "Something went wrong");
-  return result;
 }
 
-// Обработка формы входа
 const loginForm = document.getElementById("login-form");
 if (loginForm) {
   loginForm.addEventListener("submit", async (e) => {
@@ -22,7 +15,7 @@ if (loginForm) {
 
     try {
       const data = await authRequest("login", { email, password });
-      window.app.auth.setToken(data.token); // Сохраняем токен
+      window.app.auth.setToken(data.token);
       window.location.href = "index.html";
     } catch (err) {
       if (alertBox) {
@@ -34,7 +27,6 @@ if (loginForm) {
     }
   });
 }
-
 
 const registerForm = document.getElementById("register-form");
 if (registerForm) {

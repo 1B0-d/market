@@ -4,6 +4,9 @@
 (() => {
   const TOKEN_KEY = "wearly_token";
   const USER_KEY = "wearly_user"; // session cache
+  const sameOriginBase = window.location.origin;
+  let runtimeConfig = null;
+  let runtimeConfigPromise = null;
 
   function escapeHtml(str) {
     return String(str ?? "")
@@ -12,6 +15,41 @@
       .replace(/>/g, "&gt;")
       .replace(/"/g, "&quot;")
       .replace(/'/g, "&#39;");
+  }
+
+  function normalizeBaseUrl(url) {
+    const raw = String(url || "").trim();
+    if (!raw) return "";
+    return raw.replace(/\/+$/, "");
+  }
+
+  async function loadRuntimeConfig() {
+    if (runtimeConfig) return runtimeConfig;
+    if (!runtimeConfigPromise) {
+      runtimeConfigPromise = fetch("/config.json", { cache: "no-store" })
+        .then((res) => (res.ok ? res.json() : {}))
+        .catch(() => ({}))
+        .then((config) => {
+          runtimeConfig = {
+            apiBaseUrl: normalizeBaseUrl(config.apiBaseUrl || "")
+          };
+          return runtimeConfig;
+        });
+    }
+    return runtimeConfigPromise;
+  }
+
+  async function getApiBaseUrl() {
+    const config = await loadRuntimeConfig();
+    return config.apiBaseUrl || "";
+  }
+
+  async function buildApiUrl(path) {
+    if (/^https?:\/\//i.test(path)) return path;
+
+    const baseUrl = await getApiBaseUrl();
+    const normalizedPath = String(path || "").startsWith("/") ? String(path) : `/${String(path || "")}`;
+    return `${baseUrl}${normalizedPath}`;
   }
 
   const auth = {
@@ -35,7 +73,8 @@
       if (!token) return null;
 
       try {
-        const res = await fetch("/api/auth/profile", {
+        const apiUrl = await buildApiUrl("/api/auth/profile");
+        const res = await fetch(apiUrl, {
           headers: { Authorization: `Bearer ${token}` }
         });
         if (!res.ok) return null;
@@ -57,7 +96,8 @@
       headers.Authorization = `Bearer ${token}`;
     }
 
-    const res = await fetch(path, {
+    const apiUrl = await buildApiUrl(path);
+    const res = await fetch(apiUrl, {
       method,
       headers,
       body: body ? JSON.stringify(body) : undefined
@@ -129,6 +169,18 @@
     if (adminLink) adminLink.style.display = user?.role === "ADMIN" ? "inline-flex" : "none";
   }
 
+  async function wakeBackend() {
+    const apiBaseUrl = await getApiBaseUrl();
+    if (!apiBaseUrl || apiBaseUrl === sameOriginBase) return;
+
+    try {
+      const healthUrl = await buildApiUrl("/api/health");
+      await fetch(healthUrl, { method: "GET", cache: "no-store" });
+    } catch {
+      // Backend cold starts or temporary network issues should not block page render.
+    }
+  }
+
   async function populateCategoryMenus() {
     const menus = Array.from(document.querySelectorAll(".navbar .drop__menu[role='menu']"));
     if (menus.length === 0) return;
@@ -180,11 +232,13 @@
   window.app = {
     auth,
     api,
+    buildApiUrl,
     updateNavbar,
     getLikedIds
   };
 
-  document.addEventListener("DOMContentLoaded", () => {
+  document.addEventListener("DOMContentLoaded", async () => {
+    await wakeBackend();
     populateCategoryMenus();
     updateNavbar();
   });
