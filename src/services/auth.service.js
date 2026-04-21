@@ -9,17 +9,14 @@ export const registerUser = async ({ name, email, password }) => {
   const normEmail = String(email || "").trim().toLowerCase();
   if (!normEmail) throw new Error("Email is required");
 
-  // проверка существующего пользователя
   const existingUser = await User.findOne({ email: normEmail });
   if (existingUser) throw new Error("User already exists");
 
-  // хеширование пароля
   const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
 
   const user = new User({ name, email: normEmail, passwordHash });
   await user.save();
 
-  // возвращаем JWT
   const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: "7d" });
 
   return { user, token };
@@ -27,8 +24,7 @@ export const registerUser = async ({ name, email, password }) => {
 
 export const loginUser = async ({ email, password }) => {
   const normEmail = String(email || "").trim().toLowerCase();
-  // Сначала пытаемся по нормализованному email.
-  // Затем fallback для старых записей в БД, где email мог сохраниться с разным регистром.
+
   let user = await User.findOne({ email: normEmail });
   if (!user && normEmail) {
     user = await User.findOne({ email: { $regex: new RegExp(`^${normEmail.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`, "i") } });

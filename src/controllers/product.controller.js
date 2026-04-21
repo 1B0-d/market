@@ -2,6 +2,8 @@ import Product from "../models/Product.js";
 import Category from "../models/Category.js";
 import { HTTP_STATUS } from "../constants/httpStatus.js";
 
+const escapeRegex = (value) => String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
 export const getProducts = async (req, res, next) => {
   try {
     const page = Math.max(parseInt(req.query.page || "1", 10), 1);
@@ -13,12 +15,11 @@ export const getProducts = async (req, res, next) => {
     if (req.query.active === "false") filter.isActive = false;
 
     if (req.query.category) {
-      // category может быть id или slug
       const cat = await Category.findOne({
         $or: [{ _id: req.query.category }, { slug: req.query.category }]
       }).catch(() => null);
       if (cat) filter.category = cat._id;
-      else filter.category = req.query.category; // попробуем как id
+      else filter.category = req.query.category;
     }
 
     if (req.query.q) {
@@ -26,7 +27,19 @@ export const getProducts = async (req, res, next) => {
       filter.$or = [{ title: { $regex: q, $options: "i" } }, { description: { $regex: q, $options: "i" } }];
     }
 
-    // Фильтр по цене: ?minPrice=1000&maxPrice=5000
+    if (req.query.sizes) {
+      const sizes = String(req.query.sizes)
+        .split(",")
+        .map((size) => size.trim())
+        .filter(Boolean);
+      if (sizes.length > 0) filter.sizes = { $in: sizes };
+    }
+
+    if (req.query.color) {
+      const color = String(req.query.color).trim();
+      if (color) filter.colors = { $regex: `^${escapeRegex(color)}$`, $options: "i" };
+    }
+
     const minPrice = req.query.minPrice !== undefined ? Number(req.query.minPrice) : null;
     const maxPrice = req.query.maxPrice !== undefined ? Number(req.query.maxPrice) : null;
     if (!Number.isNaN(minPrice) && minPrice !== null) {

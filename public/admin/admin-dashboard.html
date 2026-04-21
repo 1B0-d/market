@@ -27,7 +27,7 @@
     <header class="admin-topbar">
       <h1 class="admin-topbar__title">Dashboard</h1>
       <div class="u-row u-wrap">
-        <span class="admin-pill">Admin</span>
+        <span class="admin-pill" id="adminIdentityPill">Admin</span>
         <a class="admin-btn admin-btn--ghost" href="admin-login.html">Logout</a>
       </div>
     </header>
@@ -35,9 +35,9 @@
     <main class="admin-main">
       <div class="u-stack">
         <div class="grid grid--3">
-          <div class="admin-card"><div class="admin-card__body u-stack"><div class="admin-muted" style="font-weight:900; font-size:12px;">TOTAL PRODUCTS</div><div style="font-size:28px; font-weight:950;">128</div><span class="admin-pill admin-pill--ok">Healthy</span></div></div>
-          <div class="admin-card"><div class="admin-card__body u-stack"><div class="admin-muted" style="font-weight:900; font-size:12px;">CATEGORIES</div><div style="font-size:28px; font-weight:950;">12</div><span class="admin-pill">Stable</span></div></div>
-          <div class="admin-card"><div class="admin-card__body u-stack"><div class="admin-muted" style="font-weight:900; font-size:12px;">USERS</div><div style="font-size:28px; font-weight:950;">4,820</div><span class="admin-pill admin-pill--low">Needs review</span></div></div>
+          <div class="admin-card"><div class="admin-card__body u-stack"><div class="admin-muted" style="font-weight:900; font-size:12px;">TOTAL PRODUCTS</div><div id="metricProducts" style="font-size:28px; font-weight:950;">128</div><span class="admin-pill admin-pill--ok">Healthy</span></div></div>
+          <div class="admin-card"><div class="admin-card__body u-stack"><div class="admin-muted" style="font-weight:900; font-size:12px;">CATEGORIES</div><div id="metricCategories" style="font-size:28px; font-weight:950;">12</div><span class="admin-pill">Stable</span></div></div>
+          <div class="admin-card"><div class="admin-card__body u-stack"><div class="admin-muted" style="font-weight:900; font-size:12px;">USERS</div><div id="metricUsers" style="font-size:28px; font-weight:950;">0</div><span class="admin-pill admin-pill--low">Registered users</span></div></div>
         </div>
 
         <div class="admin-card">

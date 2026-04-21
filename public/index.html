@@ -29,11 +29,7 @@
             <svg viewBox="0 0 24 24" fill="none"><path d="M7 10l5 5 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </span>
         </a>
-        <div class="drop__menu" role="menu" aria-label="Categories menu">
-          <a class="drop__item" href="category.html?category=women">Women <span class="u-muted">→</span></a>
-          <a class="drop__item" href="category.html?category=men">Men <span class="u-muted">→</span></a>
-          <a class="drop__item" href="category.html?category=accessories">Accessories <span class="u-muted">→</span></a>
-          <a class="drop__item" href="category.html?category=shoes">Shoes <span class="u-muted">→</span></a>
+        <div class="drop__menu" role="menu" aria-label="Categories menu" id="categoryList">
         </div>
       </div>
 
@@ -76,27 +72,19 @@
         </div>
 
         <div class="hero__mock" aria-label="Product preview mock">
-          <div class="hero__mock-grid">
-            <div class="mock-card">
-              <div class="mock-card__img"></div>
-              <div class="mock-card__line"></div>
-              <div class="mock-card__line"></div>
-            </div>
-            <div class="mock-card">
-              <div class="mock-card__img"></div>
-              <div class="mock-card__line"></div>
-              <div class="mock-card__line"></div>
-            </div>
-            <div class="mock-card">
-              <div class="mock-card__img"></div>
-              <div class="mock-card__line"></div>
-              <div class="mock-card__line"></div>
-            </div>
-            <div class="mock-card">
-              <div class="mock-card__img"></div>
-              <div class="mock-card__line"></div>
-              <div class="mock-card__line"></div>
-            </div>
+          <div class="hero-showcase">
+            <article class="hero-product">
+              <div class="hero-product__media">
+                <div class="hero-product__halo"></div>
+                <div class="hero-product__figure"></div>
+              </div>
+              <div class="hero-swatches" aria-label="Available colors">
+                <span class="hero-swatch hero-swatch--black"></span>
+                <span class="hero-swatch hero-swatch--white"></span>
+                <span class="hero-swatch hero-swatch--navy"></span>
+                <span class="hero-swatch hero-swatch--sand"></span>
+              </div>
+            </article>
           </div>
         </div>
       </div>
@@ -114,17 +102,6 @@
       <div class="grid grid--4" id="featuredGrid"></div>
     </section>
 
-    <section class="section">
-      <div class="section__head">
-        <div>
-          <h2 class="section__title">New arrivals</h2>
-          <p class="section__hint">Fresh drops just landed.</p>
-        </div>
-        <a class="btn btn--outline" href="catalog.html">Explore new</a>
-      </div>
-
-      <div class="grid grid--3" id="arrivalsGrid"></div>
-    </section>
 
   </div>
 </main>

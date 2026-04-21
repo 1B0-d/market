@@ -60,9 +60,9 @@
     <div class="u-between u-wrap u-mb-6">
       <div>
         <h1 class="page-title">Catalog</h1>
-        <p class="subtle">Browse all items — filters and sorting are UI-only.</p>
+        <p class="subtle">Browse all items and refine the list with filters and sorting.</p>
       </div>
-      <span class="badge">Showing 24 items</span>
+      <span class="badge" id="catalogCount">Showing 24 items</span>
     </div>
 
     <section class="catalog">
@@ -108,11 +108,11 @@
 
               <div class="filter__group">
                 <span class="label">Color</span>
-                <div class="chip-row">
-                  <span class="chip chip--active">Black</span>
-                  <span class="chip">White</span>
-                  <span class="chip">Navy</span>
-                  <span class="chip">Sand</span>
+                <div class="chip-row" id="f-color-container">
+                  <button class="chip" type="button" data-color="Black" aria-pressed="false">Black</button>
+                  <button class="chip" type="button" data-color="White" aria-pressed="false">White</button>
+                  <button class="chip" type="button" data-color="Navy" aria-pressed="false">Navy</button>
+                  <button class="chip" type="button" data-color="Sand" aria-pressed="false">Sand</button>
                 </div>
               </div>
 
@@ -133,11 +133,11 @@
       <!-- Products -->
       <section>
         <div class="toolbar">
-          <div class="u-row u-wrap">
+          <div class="u-row u-wrap" id="quickFilters">
             <span class="badge">Quick filters</span>
-            <a class="chip chip--active" href="catalog.html">New</a>
-            <a class="chip" href="catalog.html">Best sellers</a>
-            <a class="chip" href="catalog.html">On sale</a>
+            <button class="chip" type="button" data-quick="new" aria-pressed="false">New</button>
+            <button class="chip" type="button" data-quick="best" aria-pressed="false">Best sellers</button>
+            <button class="chip" type="button" data-quick="sale" aria-pressed="false">On sale</button>
           </div>
 
           <div class="u-row u-wrap">

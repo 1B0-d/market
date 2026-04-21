@@ -20,7 +20,6 @@ export const authMiddleware = async (req, res, next) => {
   }
 };
 
-// для проверки роли (например ADMIN)
 export const roleMiddleware = (roles) => (req, res, next) => {
   if (!roles.includes(req.user.role)) return res.status(HTTP_STATUS.FORBIDDEN).json({ message: "Forbidden" });
   next();

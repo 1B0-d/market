@@ -5,6 +5,15 @@
   const TOKEN_KEY = "wearly_token";
   const USER_KEY = "wearly_user"; // session cache
 
+  function escapeHtml(str) {
+    return String(str ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
   const auth = {
     getToken() {
       return localStorage.getItem(TOKEN_KEY) || "";
@@ -120,6 +129,44 @@
     if (adminLink) adminLink.style.display = user?.role === "ADMIN" ? "inline-flex" : "none";
   }
 
+  async function populateCategoryMenus() {
+    const menus = Array.from(document.querySelectorAll(".navbar .drop__menu[role='menu']"));
+    if (menus.length === 0) return;
+
+    try {
+      const data = await api("/api/categories?limit=100");
+      const categories = data.items || data || [];
+      if (!Array.isArray(categories) || categories.length === 0) return;
+
+      const itemsHtml = categories
+        .filter((category) => category && (category._id || category.slug))
+        .map((category) => {
+          const value = category.slug || category._id;
+          const name = escapeHtml(category.name || "Category");
+          return `<a class="drop__item" href="category.html?category=${encodeURIComponent(value)}">${name} <span class="u-muted">→</span></a>`;
+        })
+        .join("");
+
+      if (!itemsHtml) return;
+      menus.forEach((menu) => {
+        menu.innerHTML = itemsHtml;
+      });
+    } catch (error) {
+      console.error("Failed to load nav categories:", error);
+    }
+  }
+
+  document.addEventListener("click", (event) => {
+    if (!document.body.classList.contains("admin")) return;
+
+    const logoutLink = event.target.closest('a[href="admin-login.html"]');
+    if (!logoutLink) return;
+
+    event.preventDefault();
+    auth.clear();
+    window.location.href = "/index.html";
+  });
+
   // likes helper
   async function getLikedIds() {
     try {
@@ -138,6 +185,7 @@
   };
 
   document.addEventListener("DOMContentLoaded", () => {
+    populateCategoryMenus();
     updateNavbar();
   });
 })();

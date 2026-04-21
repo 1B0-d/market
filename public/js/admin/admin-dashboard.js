@@ -12,20 +12,34 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // Try to update numbers if placeholders exist
   try {
-    const [prod, cats] = await Promise.all([
+    const [prodResult, catResult, userResult] = await Promise.allSettled([
       window.app.api("/api/products?limit=1"),
-      window.app.api("/api/categories?limit=1")
+      window.app.api("/api/categories?limit=1"),
+      window.app.api("/api/admin/users?limit=1", { authRequired: true })
     ]);
-    const prodTotal = prod.total ?? prod.items?.length ?? 0;
-    const catTotal = cats.total ?? cats.items?.length ?? 0;
 
-    const cards = document.querySelectorAll(".admin-card__body");
-    // first card: products, second: categories
-    const numbers = document.querySelectorAll(".admin-card__body div[style*='font-size:28px']");
-    if (numbers[0]) numbers[0].textContent = String(prodTotal);
-    if (numbers[1]) numbers[1].textContent = String(catTotal);
+    const productMetric = document.getElementById("metricProducts");
+    const categoryMetric = document.getElementById("metricCategories");
+    const userMetric = document.getElementById("metricUsers");
+    const identityPill = document.getElementById("adminIdentityPill");
 
-    const pill = document.querySelector(".admin-pill");
-    if (pill) pill.textContent = `Admin: ${me.user?.name || me.user?.email || ""}`;
+    if (prodResult.status === "fulfilled" && productMetric) {
+      const prodTotal = prodResult.value.total ?? prodResult.value.items?.length ?? 0;
+      productMetric.textContent = String(prodTotal);
+    }
+
+    if (catResult.status === "fulfilled" && categoryMetric) {
+      const catTotal = catResult.value.total ?? catResult.value.items?.length ?? 0;
+      categoryMetric.textContent = String(catTotal);
+    }
+
+    if (userResult.status === "fulfilled" && userMetric) {
+      const userTotal = userResult.value.total ?? userResult.value.items?.length ?? 0;
+      userMetric.textContent = String(userTotal);
+    }
+
+    if (identityPill) {
+      identityPill.textContent = `Admin: ${me.user?.name || me.user?.email || ""}`;
+    }
   } catch {}
 });
